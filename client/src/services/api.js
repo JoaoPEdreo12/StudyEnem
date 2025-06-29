@@ -1,14 +1,16 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import API_CONFIG from '../config/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// URL da API - prioriza variável de ambiente, senão usa Railway
+const API_BASE_URL = process.env.REACT_APP_API_URL || API_CONFIG.BASE_URL;
+
+console.log('API URL:', API_BASE_URL); // Debug
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  timeout: API_CONFIG.TIMEOUT,
+  headers: API_CONFIG.DEFAULT_HEADERS,
 });
 
 // Interceptor para adicionar token de autenticação
@@ -21,6 +23,7 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.error('Erro na requisição:', error);
     return Promise.reject(error);
   }
 );
@@ -31,6 +34,8 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
+    console.error('Erro na resposta:', error);
+    
     const originalRequest = error.config;
 
     // Se o erro for 401 e não for uma tentativa de refresh
@@ -52,25 +57,48 @@ api.interceptors.response.use(
           return api(originalRequest);
         }
       } catch (refreshError) {
+        console.error('Erro no refresh token:', refreshError);
         // Se o refresh falhar, fazer logout
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        window.location.href = '/auth';
         return Promise.reject(refreshError);
       }
     }
 
-    // Tratamento de erros gerais
-    if (error.response?.data?.message) {
+    // Tratamento de erros específicos
+    if (error.code === 'ECONNABORTED') {
+      toast.error('Timeout na conexão com o servidor. Tente novamente.');
+    } else if (error.code === 'ERR_NETWORK') {
+      toast.error('Erro de conexão. Verifique sua internet e tente novamente.');
+    } else if (error.response?.status === 500) {
+      toast.error('Erro interno do servidor. Tente novamente mais tarde.');
+    } else if (error.response?.status === 404) {
+      toast.error('Recurso não encontrado.');
+    } else if (error.response?.data?.message) {
       toast.error(error.response.data.message);
-    } else if (error.message) {
-      toast.error('Erro na comunicação com o servidor');
+    } else {
+      toast.error('Erro na comunicação com o servidor. Tente novamente.');
     }
 
     return Promise.reject(error);
   }
 );
+
+// Função para testar a conectividade com o servidor
+export const testConnection = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/health`, {
+      timeout: 5000,
+    });
+    console.log('Conexão com servidor OK:', response.data);
+    return true;
+  } catch (error) {
+    console.error('Erro na conexão com servidor:', error);
+    return false;
+  }
+};
 
 // Serviços de autenticação
 export const authService = {
