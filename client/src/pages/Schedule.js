@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Plus, Calendar, Search, Edit, Trash2, CheckCircle } from 'lucide-react';
+import { Plus, Calendar, Search, Edit, Trash2, CheckCircle, Star, MoreVertical } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Schedule = () => {

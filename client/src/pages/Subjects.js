@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, BookOpen, Edit, Trash2, Search, MoreVertical, Book, GraduationCap, Brain, Calculator, Globe, Leaf, Atom, TestTube, Languages } from 'lucide-react';
+import { Plus, BookOpen, Edit, Trash2, Search, MoreVertical, Book, GraduationCap, Brain, Calculator, Globe, Leaf, Atom, TestTube, Languages, Clock, Target, TrendingUp, Star } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Subjects = () => {

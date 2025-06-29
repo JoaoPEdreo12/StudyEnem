@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit, Trash2, Search, BookOpen, Play, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, BookOpen, Play, Eye, X, Lightbulb, Brain, Shuffle, Target, BarChart3, CheckCircle, TrendingUp, MoreVertical, Calendar } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Flashcards = () => {
