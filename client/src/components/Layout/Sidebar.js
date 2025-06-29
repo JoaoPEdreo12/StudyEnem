@@ -5,7 +5,7 @@ import {
   Home,
   Calendar,
   BookOpen,
-  Cards,
+  CreditCard,
   Trophy,
   Bell,
   Settings,
@@ -43,7 +43,7 @@ const menuItems = [
   },
   {
     title: 'Flashcards',
-    icon: Cards,
+    icon: CreditCard,
     path: '/flashcards',
     color: 'text-orange-600',
     bgColor: 'bg-orange-50',
