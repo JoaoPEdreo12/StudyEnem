@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { authService } from '../services/api';
+import { authService, testConnection } from '../services/api';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext();
@@ -81,6 +81,7 @@ export const AuthProvider = ({ children }) => {
             payload: { user },
           });
         } catch (error) {
+          console.error('Erro ao verificar autenticação:', error);
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           localStorage.removeItem('user');
@@ -97,10 +98,17 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (credentials) => {
+  const login = async (email, password) => {
     try {
       dispatch({ type: 'AUTH_START' });
-      const response = await authService.login(credentials);
+      
+      // Testar conexão com o servidor primeiro
+      const isConnected = await testConnection();
+      if (!isConnected) {
+        throw new Error('Não foi possível conectar ao servidor. Verifique sua internet.');
+      }
+
+      const response = await authService.login({ email, password });
       const { user, accessToken, refreshToken } = response.data;
 
       localStorage.setItem('accessToken', accessToken);
@@ -115,7 +123,8 @@ export const AuthProvider = ({ children }) => {
       toast.success('Login realizado com sucesso!');
       return { success: true };
     } catch (error) {
-      const message = error.response?.data?.message || 'Erro ao fazer login';
+      console.error('Erro no login:', error);
+      const message = error.response?.data?.message || error.message || 'Erro ao fazer login';
       dispatch({
         type: 'AUTH_FAILURE',
         payload: message,
@@ -128,6 +137,13 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       dispatch({ type: 'AUTH_START' });
+      
+      // Testar conexão com o servidor primeiro
+      const isConnected = await testConnection();
+      if (!isConnected) {
+        throw new Error('Não foi possível conectar ao servidor. Verifique sua internet.');
+      }
+
       const response = await authService.register(userData);
       const { user, accessToken, refreshToken } = response.data;
 
@@ -143,7 +159,8 @@ export const AuthProvider = ({ children }) => {
       toast.success('Conta criada com sucesso!');
       return { success: true };
     } catch (error) {
-      const message = error.response?.data?.message || 'Erro ao criar conta';
+      console.error('Erro no registro:', error);
+      const message = error.response?.data?.message || error.message || 'Erro ao criar conta';
       dispatch({
         type: 'AUTH_FAILURE',
         payload: message,

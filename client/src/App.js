@@ -1,8 +1,12 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import LoginForm from './components/Auth/LoginForm';
+import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
+import Schedule from './pages/Schedule';
+import Subjects from './pages/Subjects';
+import Flashcards from './pages/Flashcards';
+import ConnectionTest from './components/ConnectionTest';
 
 // Componente para rotas protegidas
 const ProtectedRoute = ({ children }) => {
@@ -17,7 +21,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/auth" replace />;
   }
 
   return children;
@@ -44,39 +48,71 @@ const PublicRoute = ({ children }) => {
 
 const AppRoutes = () => {
   return (
-    <Routes>
-      {/* Rotas públicas */}
-      <Route
-        path="/login"
-        element={
-          <PublicRoute>
-            <LoginForm />
-          </PublicRoute>
-        }
-      />
+    <>
+      <Routes>
+        {/* Rotas públicas */}
+        <Route
+          path="/auth"
+          element={
+            <PublicRoute>
+              <Auth />
+            </PublicRoute>
+          }
+        />
+        
+        {/* Rota raiz - redireciona para dashboard se autenticado, senão para auth */}
+        <Route
+          path="/"
+          element={<Navigate to="/dashboard" replace />}
+        />
+
+        {/* Rotas protegidas */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/schedule"
+          element={
+            <ProtectedRoute>
+              <Schedule />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/subjects"
+          element={
+            <ProtectedRoute>
+              <Subjects />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/flashcards"
+          element={
+            <ProtectedRoute>
+              <Flashcards />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Rota de fallback */}
+        <Route
+          path="*"
+          element={<Navigate to="/dashboard" replace />}
+        />
+      </Routes>
       
-      {/* Rota raiz - redireciona para dashboard se autenticado, senão para login */}
-      <Route
-        path="/"
-        element={<Navigate to="/dashboard" replace />}
-      />
-
-      {/* Rotas protegidas */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Rota de fallback */}
-      <Route
-        path="*"
-        element={<Navigate to="/dashboard" replace />}
-      />
-    </Routes>
+      {/* Componente de teste de conexão para debug */}
+      <ConnectionTest />
+    </>
   );
 };
 

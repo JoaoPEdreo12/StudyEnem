@@ -1,18 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useQuery } from 'react-query';
-import {
-  Calendar,
-  BookOpen,
-  Target,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Trophy,
-  Plus,
-  ArrowRight,
-} from 'lucide-react';
+import { Calendar, BookOpen, CheckCircle, Trophy, Plus, ArrowRight } from 'lucide-react';
 import { userService, scheduleService } from '../services/api';
 import DashboardStats from '../components/Dashboard/DashboardStats';
 import Layout from '../components/Layout/Layout';
